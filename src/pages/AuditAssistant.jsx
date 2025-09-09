@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import jsPDF from "jspdf";
 
 export default function AuditAssistant() {
   const [step, setStep] = useState(0);
   const [responses, setResponses] = useState({});
+  const [showAvatar, setShowAvatar] = useState(true);
+  const [voiceEnabled] = useState(true);
 
   const questions = [
     { key: "secteur", label: "Dans quel secteur exercez-vous ?" },
@@ -25,6 +27,16 @@ export default function AuditAssistant() {
     "Je continue l’analyse...",
     "Encore une étape pour affiner votre profil..."
   ];
+
+  useEffect(() => {
+    if (voiceEnabled && step < questions.length) {
+      const message = new SpeechSynthesisUtterance(
+        step === 0 ? iaIntro[0] : iaIntro[Math.min(step, iaIntro.length - 1)]
+      );
+      message.lang = "fr-FR";
+      window.speechSynthesis.speak(message);
+    }
+  }, [step, voiceEnabled]);
 
   const handleChange = (key, value) => {
     setResponses({ ...responses, [key]: value });
@@ -89,9 +101,14 @@ export default function AuditAssistant() {
     <div style={{ background: "#fdfaf5", minHeight: "100vh", padding: "2rem" }}>
       {step < questions.length ? (
         <div style={{ maxWidth: "600px", margin: "0 auto", background: "#ffffff", padding: "2rem", borderRadius: "10px", border: "1px solid #1c2b4a" }}>
-          <div style={{ marginBottom: "1rem", fontStyle: "italic", color: "#1c2b4a" }}>
-            💬 {step === 0 ? iaIntro[0] : iaIntro[Math.min(step, iaIntro.length - 1)]}
-          </div>
+          {showAvatar && (
+            <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>
+              <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="IA" style={{ width: "40px", marginRight: "0.75rem" }} />
+              <div style={{ fontStyle: "italic", color: "#1c2b4a" }}>
+                💬 {step === 0 ? iaIntro[0] : iaIntro[Math.min(step, iaIntro.length - 1)]}
+              </div>
+            </div>
+          )}
           <h2 style={{ marginBottom: "1rem", color: "#1c2b4a" }}>{questions[step].label}</h2>
           <textarea
             style={{ width: "100%", minHeight: "80px", fontSize: "1rem", marginBottom: "1rem" }}
