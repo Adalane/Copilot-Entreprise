@@ -57,41 +57,49 @@ export default function AuditAssistant() {
   };
 
   const renderSummary = () => {
-    const suggestions = [];
-    if (!responses.vision || responses.vision.length < 10) suggestions.push("Clarifiez vos objectifs à 1-3 ans pour donner un cap clair à votre entreprise.");
-    if (!responses.priorites || responses.priorites.length < 10) suggestions.push("Identifiez vos 3 vraies priorités de développement pour focaliser vos efforts.");
-    if (responses.rh?.toLowerCase().includes("oui")) suggestions.push("Travaillez votre marque employeur ou vos processus de recrutement pour fidéliser vos équipes.");
-    if (responses.tableaux?.toLowerCase().includes("non") || responses.tableaux?.toLowerCase().includes("aucun")) suggestions.push("Mettez en place un suivi régulier avec quelques indicateurs simples.");
-    if (responses.marge?.toLowerCase().includes("non")) suggestions.push("Calculez vos marges et votre seuil de rentabilité pour sécuriser votre activité.");
-    if (responses.outils?.toLowerCase().includes("rien")) suggestions.push("Testez 1 ou 2 outils numériques simples pour gagner du temps.");
+    const actions = [];
+    const r = responses;
+    if (!r.vision || r.vision.length < 10) actions.push("📌 Formaliser des objectifs clairs à 1 et 3 ans pour orienter les décisions");
+    if (!r.priorites || r.priorites.length < 10) actions.push("📌 Lister les 3 chantiers prioritaires à lancer dès ce trimestre");
+    if (!r.tableaux || r.tableaux.toLowerCase().includes("non") || r.tableaux.toLowerCase().includes("aucun")) actions.push("📊 Mettre en place un tableau de bord mensuel (CA, marge, charges)");
+    if (!r.marge || r.marge.toLowerCase().includes("non")) actions.push("💰 Calculer la marge brute et le point mort pour piloter la rentabilité");
+    if (r.rh?.toLowerCase().includes("oui")) actions.push("👥 Revoir la stratégie RH (attractivité, fidélisation, conditions)");
+    if (!r.outils || r.outils.toLowerCase().includes("rien")) actions.push("⚙️ Tester un outil numérique pour gagner du temps sur l’administratif");
+    if (r.organisation && r.organisation.toLowerCase().includes("polyvalence")) actions.push("🏗️ Clarifier les rôles de chacun avec une fiche de poste simple");
 
     return (
-      <div style={{ maxWidth: "600px", margin: "2rem auto", padding: "1rem", background: "#fdfaf5", border: "1px solid #1c2b4a" }}>
-        <h2 style={{ color: "#1c2b4a" }}>🤖 Analyse par Copilot IA</h2>
+      <div style={{ maxWidth: "700px", margin: "2rem auto", padding: "2rem", background: "#f5f3ef", border: "1px solid #1c2b4a", borderRadius: "12px" }}>
+        <h2 style={{ color: "#1c2b4a" }}>🧠 Synthèse de l’audit – par Copilot IA</h2>
+
+        <p style={{ color: "#1c2b4a", marginBottom: "1rem" }}>Voici un récapitulatif de vos réponses, accompagné de recommandations concrètes :</p>
+
         <ul>
           {questions.map((q) => (
             <li key={q.key} style={{ marginBottom: "1rem" }}>
               <strong>{q.label}</strong><br />
-              {responses[q.key]}
+              <em style={{ color: "#333" }}>{responses[q.key]}</em>
             </li>
           ))}
         </ul>
-        <h3 style={{ color: "#1c2b4a", marginTop: "2rem" }}>💡 Pistes d’amélioration suggérées :</h3>
-        {suggestions.length > 0 ? (
-          <ul>
-            {suggestions.map((s, index) => (
-              <li key={index}>{s}</li>
+
+        <h3 style={{ color: "#1c2b4a", marginTop: "2rem" }}>🚀 Plans d’action recommandés :</h3>
+        {actions.length > 0 ? (
+          <ul style={{ paddingLeft: "1.2rem" }}>
+            {actions.map((a, i) => (
+              <li key={i} style={{ marginBottom: "0.5rem" }}>{a}</li>
             ))}
           </ul>
         ) : (
-          <p>✅ Votre organisation semble déjà bien structurée. Bravo !</p>
+          <p style={{ color: "#1c2b4a" }}>✅ Aucun point critique identifié. Votre entreprise semble bien structurée.</p>
         )}
-        <p style={{ color: "#1c2b4a", marginTop: "1rem" }}>
-          👉 Ce diagnostic est généré par Copilot IA. Pour une analyse approfondie, contactez <strong>Jean Mi</strong>.
+
+        <p style={{ color: "#1c2b4a", marginTop: "2rem" }}>
+          👉 Ce diagnostic a été généré par Copilot IA. Pour une analyse approfondie et un accompagnement personnalisé, contactez <strong>Jean Mi</strong> – Adalane Conseil.
         </p>
-        <div style={{ marginTop: "1rem" }}>
-          <button onClick={handleSend} style={buttonStyle}>Envoyer à Jean Mi</button>
-          <button onClick={handleDownloadPDF} style={{ ...buttonStyle, background: "#ffffff", color: "#1c2b4a", border: "1px solid #1c2b4a", marginLeft: "1rem" }}>Télécharger le PDF</button>
+
+        <div style={{ marginTop: "2rem" }}>
+          <button onClick={handleSend} style={buttonStyle}>📩 Envoyer à Jean Mi</button>
+          <button onClick={handleDownloadPDF} style={{ ...buttonStyle, background: "#ffffff", color: "#1c2b4a", border: "1px solid #1c2b4a", marginLeft: "1rem" }}>📄 Télécharger le PDF</button>
         </div>
       </div>
     );
@@ -100,10 +108,11 @@ export default function AuditAssistant() {
   const buttonStyle = {
     background: "#1c2b4a",
     color: "#ffffff",
-    padding: "0.5rem 1rem",
+    padding: "0.6rem 1.2rem",
     border: "none",
     cursor: "pointer",
-    borderRadius: "6px"
+    borderRadius: "8px",
+    fontSize: "1rem"
   };
 
   const handleKeyDown = (e) => {
@@ -114,9 +123,9 @@ export default function AuditAssistant() {
   };
 
   return (
-    <div style={{ background: "#fdfaf5", minHeight: "100vh", padding: "2rem" }}>
+    <div style={{ background: "#f5f3ef", minHeight: "100vh", padding: "2rem" }}>
       {step < questions.length ? (
-        <div style={{ maxWidth: "600px", margin: "0 auto", background: "#ffffff", padding: "2rem", borderRadius: "10px", border: "1px solid #1c2b4a" }}>
+        <div style={{ maxWidth: "700px", margin: "0 auto", background: "#ffffff", padding: "2rem", borderRadius: "12px", border: "1px solid #1c2b4a" }}>
           {showAvatar && (
             <div style={{ display: "flex", alignItems: "center", marginBottom: "1rem" }}>
               <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="IA" style={{ width: "40px", marginRight: "0.75rem" }} />
@@ -127,7 +136,7 @@ export default function AuditAssistant() {
           )}
           <h2 style={{ marginBottom: "1rem", color: "#1c2b4a" }}>{questions[step].label}</h2>
           <textarea
-            style={{ width: "100%", minHeight: "80px", fontSize: "1rem", marginBottom: "0.5rem" }}
+            style={{ width: "100%", minHeight: "80px", fontSize: "1rem", marginBottom: "0.5rem", borderRadius: "6px", border: "1px solid #ccc", padding: "0.5rem" }}
             value={responses[questions[step].key] || ""}
             onChange={(e) => handleChange(questions[step].key, e.target.value)}
             onKeyDown={handleKeyDown}
