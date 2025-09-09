@@ -6,16 +6,24 @@ export default function AuditAssistant() {
   const [responses, setResponses] = useState({});
 
   const questions = [
-    { key: "secteur", label: "Quel est votre secteur d’activité ?" },
-    { key: "effectif", label: "Combien de salariés compte votre entreprise aujourd’hui ?" },
-    { key: "anciennete", label: "Depuis combien d’années l’entreprise est-elle en activité ?" },
+    { key: "secteur", label: "Dans quel secteur exercez-vous ?" },
+    { key: "effectif", label: "Combien de salariés compte votre entreprise ?" },
+    { key: "anciennete", label: "Depuis combien d’années êtes-vous en activité ?" },
     { key: "vision", label: "Avez-vous défini une vision ou des objectifs à 1 ou 3 ans ?" },
-    { key: "priorites", label: "Quels sont vos 3 priorités de développement ?" },
-    { key: "organisation", label: "Disposez-vous d’une organisation claire avec des rôles bien définis ?" },
-    { key: "rh", label: "Avez-vous des difficultés de recrutement ou de fidélisation ?" },
-    { key: "tableaux", label: "Avez-vous des tableaux de bord réguliers (activité, finances…) ?" },
+    { key: "priorites", label: "Quelles sont vos 3 priorités de développement ?" },
+    { key: "organisation", label: "Votre organisation est-elle structurée avec des rôles bien définis ?" },
+    { key: "rh", label: "Rencontrez-vous des difficultés de recrutement ou de fidélisation ?" },
+    { key: "tableaux", label: "Disposez-vous de tableaux de bord pour suivre votre activité ?" },
     { key: "marge", label: "Connaissez-vous précisément vos marges ou votre seuil de rentabilité ?" },
     { key: "outils", label: "Utilisez-vous des outils numériques ou de l’automatisation ? Lesquels ?" },
+  ];
+
+  const iaIntro = [
+    "Bonjour, je suis Copilot IA, votre assistant intelligent pour ce diagnostic.",
+    "Merci. Passons à la prochaine question...",
+    "C’est noté. Allons un peu plus loin...",
+    "Je continue l’analyse...",
+    "Encore une étape pour affiner votre profil..."
   ];
 
   const handleChange = (key, value) => {
@@ -26,8 +34,8 @@ export default function AuditAssistant() {
 
   const handleSend = () => {
     const body = questions
-      .map((q) => `${q.label}\\n${responses[q.key] || "-"}`)
-      .join("\\n\\n");
+      .map((q) => `${q.label}\n${responses[q.key] || "-"}`)
+      .join("\n\n");
     const mailtoLink = `mailto:contact@adalane.fr?subject=Diagnostic%20Entreprise&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoLink;
   };
@@ -49,7 +57,7 @@ export default function AuditAssistant() {
 
   const renderSummary = () => (
     <div style={{ maxWidth: "600px", margin: "2rem auto", padding: "1rem", background: "#fdfaf5", border: "1px solid #1c2b4a" }}>
-      <h2 style={{ color: "#1c2b4a" }}>Votre mini diagnostic</h2>
+      <h2 style={{ color: "#1c2b4a" }}>🤖 Analyse par Copilot IA</h2>
       <ul>
         {questions.map((q) => (
           <li key={q.key} style={{ marginBottom: "1rem" }}>
@@ -59,7 +67,7 @@ export default function AuditAssistant() {
         ))}
       </ul>
       <p style={{ color: "#1c2b4a", marginTop: "1rem" }}>
-        👉 Pour aller plus loin, contactez <strong>Jean Mi</strong>, consultant expert en stratégie et organisation.
+        👉 Ce diagnostic est généré par Copilot IA. Pour une analyse approfondie, contactez <strong>Jean Mi</strong>.
       </p>
       <div style={{ marginTop: "1rem" }}>
         <button onClick={handleSend} style={buttonStyle}>Envoyer à Jean Mi</button>
@@ -81,6 +89,9 @@ export default function AuditAssistant() {
     <div style={{ background: "#fdfaf5", minHeight: "100vh", padding: "2rem" }}>
       {step < questions.length ? (
         <div style={{ maxWidth: "600px", margin: "0 auto", background: "#ffffff", padding: "2rem", borderRadius: "10px", border: "1px solid #1c2b4a" }}>
+          <div style={{ marginBottom: "1rem", fontStyle: "italic", color: "#1c2b4a" }}>
+            💬 {step === 0 ? iaIntro[0] : iaIntro[Math.min(step, iaIntro.length - 1)]}
+          </div>
           <h2 style={{ marginBottom: "1rem", color: "#1c2b4a" }}>{questions[step].label}</h2>
           <textarea
             style={{ width: "100%", minHeight: "80px", fontSize: "1rem", marginBottom: "1rem" }}
