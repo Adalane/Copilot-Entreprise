@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import jsPDF from "jspdf";
 
@@ -27,8 +26,8 @@ export default function AuditAssistant() {
 
   const handleSend = () => {
     const body = questions
-      .map((q) => `${q.label}\n${responses[q.key] || "-"}`)
-      .join("\n\n");
+      .map((q) => `${q.label}\\n${responses[q.key] || "-"}`)
+      .join("\\n\\n");
     const mailtoLink = `mailto:contact@adalane.fr?subject=Diagnostic%20Entreprise&body=${encodeURIComponent(body)}`;
     window.location.href = mailtoLink;
   };
@@ -48,50 +47,49 @@ export default function AuditAssistant() {
     doc.save("diagnostic-entreprise.pdf");
   };
 
-  const renderSummary = () => {
-    return (
-      <Card className="max-w-xl mx-auto mt-6 p-4 bg-[#fdfaf5] border-[#1c2b4a]">
-        <CardContent>
-          <h2 className="text-xl font-bold mb-4 text-[#1c2b4a]">Votre mini diagnostic</h2>
-          <ul className="space-y-2">
-            {questions.map((q) => (
-              <li key={q.key}>
-                <strong>{q.label}</strong><br />
-                <span>{responses[q.key]}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-6">
-            <p className="font-medium text-[#1c2b4a]">
-              👉 Pour aller plus loin, je vous recommande de contacter <strong>Jean Mi</strong>, consultant expert en stratégie et organisation. Souhaitez-vous transmettre votre diagnostic ?
-            </p>
-            <div className="flex gap-4 mt-4">
-              <Button onClick={handleSend} className="bg-[#1c2b4a] text-white hover:bg-[#2f3d60]">Envoyer à Jean Mi</Button>
-              <Button onClick={handleDownloadPDF} variant="outline" className="border-[#1c2b4a] text-[#1c2b4a] hover:bg-[#f0e9e0]">Télécharger le PDF</Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+  const renderSummary = () => (
+    <div style={{ maxWidth: "600px", margin: "2rem auto", padding: "1rem", background: "#fdfaf5", border: "1px solid #1c2b4a" }}>
+      <h2 style={{ color: "#1c2b4a" }}>Votre mini diagnostic</h2>
+      <ul>
+        {questions.map((q) => (
+          <li key={q.key} style={{ marginBottom: "1rem" }}>
+            <strong>{q.label}</strong><br />
+            {responses[q.key]}
+          </li>
+        ))}
+      </ul>
+      <p style={{ color: "#1c2b4a", marginTop: "1rem" }}>
+        👉 Pour aller plus loin, contactez <strong>Jean Mi</strong>, consultant expert en stratégie et organisation.
+      </p>
+      <div style={{ marginTop: "1rem" }}>
+        <button onClick={handleSend} style={buttonStyle}>Envoyer à Jean Mi</button>
+        <button onClick={handleDownloadPDF} style={{ ...buttonStyle, background: "#ffffff", color: "#1c2b4a", border: "1px solid #1c2b4a", marginLeft: "1rem" }}>Télécharger le PDF</button>
+      </div>
+    </div>
+  );
+
+  const buttonStyle = {
+    background: "#1c2b4a",
+    color: "#ffffff",
+    padding: "0.5rem 1rem",
+    border: "none",
+    cursor: "pointer",
+    borderRadius: "6px"
   };
 
   return (
-    <div className="p-6 bg-[#fdfaf5] min-h-screen">
+    <div style={{ background: "#fdfaf5", minHeight: "100vh", padding: "2rem" }}>
       {step < questions.length ? (
-        <Card className="max-w-xl mx-auto border-[#1c2b4a]">
-          <CardContent className="p-6">
-            <h2 className="text-lg font-semibold mb-4 text-[#1c2b4a]">
-              {questions[step].label}
-            </h2>
-            <Textarea
-              className="mb-4"
-              value={responses[questions[step].key] || ""}
-              onChange={(e) => handleChange(questions[step].key, e.target.value)}
-              placeholder="Votre réponse..."
-            />
-            <Button onClick={nextStep} className="bg-[#1c2b4a] text-white hover:bg-[#2f3d60]">Suivant</Button>
-          </CardContent>
-        </Card>
+        <div style={{ maxWidth: "600px", margin: "0 auto", background: "#ffffff", padding: "2rem", borderRadius: "10px", border: "1px solid #1c2b4a" }}>
+          <h2 style={{ marginBottom: "1rem", color: "#1c2b4a" }}>{questions[step].label}</h2>
+          <textarea
+            style={{ width: "100%", minHeight: "80px", fontSize: "1rem", marginBottom: "1rem" }}
+            value={responses[questions[step].key] || ""}
+            onChange={(e) => handleChange(questions[step].key, e.target.value)}
+            placeholder="Votre réponse..."
+          />
+          <button onClick={nextStep} style={buttonStyle}>Suivant</button>
+        </div>
       ) : (
         renderSummary()
       )}
