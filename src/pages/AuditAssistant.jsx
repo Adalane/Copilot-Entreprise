@@ -4,20 +4,19 @@ import jsPDF from "jspdf";
 export default function AuditAssistant() {
   const [step, setStep] = useState(0);
   const [responses, setResponses] = useState({});
-  const [showAvatar, setShowAvatar] = useState(true);
-  const [voiceEnabled] = useState(true);
+  const [showAvatar] = useState(true);
 
   const questions = [
-    { key: "secteur", label: "Dans quel secteur exercez-vous ?" },
-    { key: "effectif", label: "Combien de salariés compte votre entreprise ?" },
-    { key: "anciennete", label: "Depuis combien d’années êtes-vous en activité ?" },
-    { key: "vision", label: "Avez-vous défini une vision ou des objectifs à 1 ou 3 ans ?" },
-    { key: "priorites", label: "Quelles sont vos 3 priorités de développement ?" },
-    { key: "organisation", label: "Votre organisation est-elle structurée avec des rôles bien définis ?" },
-    { key: "rh", label: "Rencontrez-vous des difficultés de recrutement ou de fidélisation ?" },
-    { key: "tableaux", label: "Disposez-vous de tableaux de bord pour suivre votre activité ?" },
-    { key: "marge", label: "Connaissez-vous précisément vos marges ou votre seuil de rentabilité ?" },
-    { key: "outils", label: "Utilisez-vous des outils numériques ou de l’automatisation ? Lesquels ?" },
+    { key: "secteur", label: "🧭 Dans quel secteur exerce votre entreprise ? (ex : bâtiment, commerce, service à la personne…)" },
+    { key: "effectif", label: "👥 Combien de personnes travaillent aujourd’hui dans l’entreprise ? (salariés, dirigeants inclus)" },
+    { key: "anciennete", label: "📆 Depuis combien d’années l’entreprise est-elle en activité ?" },
+    { key: "vision", label: "🎯 Avez-vous défini des objectifs clairs pour les 12 à 36 prochains mois ? Si oui, lesquels ?" },
+    { key: "priorites", label: "🚀 Quelles sont vos 3 priorités de développement à court ou moyen terme ?" },
+    { key: "organisation", label: "🏗️ Comment est structurée votre organisation ? Avez-vous des fiches de poste, des rôles clairs ?" },
+    { key: "rh", label: "📉 Rencontrez-vous actuellement des difficultés à recruter ou fidéliser vos équipes ?" },
+    { key: "tableaux", label: "📊 Disposez-vous de tableaux de bord ou d’indicateurs pour suivre l’activité ou les finances ?" },
+    { key: "marge", label: "💰 Connaissez-vous précisément vos marges, votre seuil de rentabilité ou vos coûts fixes ?" },
+    { key: "outils", label: "💻 Quels outils numériques ou automatisations utilisez-vous aujourd’hui ? (ex : facturation, agenda, RH…)" },
   ];
 
   const iaIntro = [
@@ -27,16 +26,6 @@ export default function AuditAssistant() {
     "Je continue l’analyse...",
     "Encore une étape pour affiner votre profil..."
   ];
-
-  useEffect(() => {
-    if (voiceEnabled && step < questions.length) {
-      const message = new SpeechSynthesisUtterance(
-        step === 0 ? iaIntro[0] : iaIntro[Math.min(step, iaIntro.length - 1)]
-      );
-      message.lang = "fr-FR";
-      window.speechSynthesis.speak(message);
-    }
-  }, [step, voiceEnabled]);
 
   const handleChange = (key, value) => {
     setResponses({ ...responses, [key]: value });
@@ -97,6 +86,13 @@ export default function AuditAssistant() {
     borderRadius: "6px"
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      nextStep();
+    }
+  };
+
   return (
     <div style={{ background: "#fdfaf5", minHeight: "100vh", padding: "2rem" }}>
       {step < questions.length ? (
@@ -114,7 +110,8 @@ export default function AuditAssistant() {
             style={{ width: "100%", minHeight: "80px", fontSize: "1rem", marginBottom: "1rem" }}
             value={responses[questions[step].key] || ""}
             onChange={(e) => handleChange(questions[step].key, e.target.value)}
-            placeholder="Votre réponse..."
+            onKeyDown={handleKeyDown}
+            placeholder="Votre réponse... (Appuyez sur Entrée pour valider)"
           />
           <button onClick={nextStep} style={buttonStyle}>Suivant</button>
         </div>
